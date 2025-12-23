@@ -38,6 +38,32 @@ function init_pickup_from_store_gateway() {
         
         // Register the gateway after class is loaded
         add_filter('woocommerce_payment_gateways', 'register_pickup_from_store_gateway');
+        
+        // Register blocks support
+        add_action('woocommerce_blocks_loaded', 'pickup_from_store_gateway_block_support');
+        
+        // Declare cart/checkout blocks compatibility
+        add_action('before_woocommerce_init', 'pickup_from_store_cart_checkout_blocks_compatibility');
+    }
+}
+
+function pickup_from_store_gateway_block_support() {
+    require_once __DIR__ . '/includes/class-wc-pickup-from-store-gateway-blocks-support.php';
+    add_action(
+        'woocommerce_blocks_payment_method_type_registration',
+        function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
+            $payment_method_registry->register(new WC_Pickup_From_Store_Gateway_Blocks_Support);
+        }
+    );
+}
+
+function pickup_from_store_cart_checkout_blocks_compatibility() {
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'cart_checkout_blocks',
+            __FILE__,
+            true // true (compatible) - Pickup from Store gateway supports WooCommerce Blocks
+        );
     }
 }
 
