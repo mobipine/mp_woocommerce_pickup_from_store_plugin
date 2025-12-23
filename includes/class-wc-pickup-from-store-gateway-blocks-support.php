@@ -17,9 +17,22 @@ final class WC_Pickup_From_Store_Gateway_Blocks_Support extends AbstractPaymentM
 	}
 
 	public function get_payment_method_script_handles() {
-		// No custom JavaScript needed for this simple offline payment method
-		// WooCommerce Blocks will handle it automatically
-		return array();
+
+		wp_register_script(
+			'wc-pickup-from-store-blocks-integration',
+			plugin_dir_url( __DIR__ ) . 'build/index.js',
+			array(
+				'wc-blocks-registry',
+				'wc-settings',
+				'wp-element',
+				'wp-html-entities',
+			),
+			null, // or time() or filemtime( ... ) to skip caching
+			true
+		);
+
+		return array( 'wc-pickup-from-store-blocks-integration' );
+
 	}
 
 	public function get_payment_method_data() {

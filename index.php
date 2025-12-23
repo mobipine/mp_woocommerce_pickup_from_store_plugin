@@ -17,9 +17,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Load the gateway class
-add_action('plugins_loaded', 'init_pickup_from_store_gateway');
-function init_pickup_from_store_gateway() {
+// Check if the license key is valid before registering gateways and other functionalities
+function pickup_from_store_init() {
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
         add_action('admin_notices', 'pickup_from_store_woocommerce_missing_notice');
@@ -34,38 +33,34 @@ function init_pickup_from_store_gateway() {
     
     // Register the gateways
     add_filter('woocommerce_payment_gateways', 'register_pickup_from_store_gateway');
-    
-    // Register blocks support
+    function register_pickup_from_store_gateway($gateways) {
+        $gateways[] = 'WC_Pickup_From_Store_Gateway';
+        return $gateways;
+    }
+
     add_action('woocommerce_blocks_loaded', 'pickup_from_store_gateway_block_support');
-    
-    // Declare cart/checkout blocks compatibility
-    add_action('before_woocommerce_init', 'pickup_from_store_cart_checkout_blocks_compatibility');
-}
-
-function register_pickup_from_store_gateway($gateways) {
-    $gateways[] = 'WC_Pickup_From_Store_Gateway';
-    return $gateways;
-}
-
-function pickup_from_store_gateway_block_support() {
-    require_once __DIR__ . '/includes/class-wc-pickup-from-store-gateway-blocks-support.php';
-    add_action(
-        'woocommerce_blocks_payment_method_type_registration',
-        function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
-            $payment_method_registry->register(new WC_Pickup_From_Store_Gateway_Blocks_Support);
-        }
-    );
-}
-
-function pickup_from_store_cart_checkout_blocks_compatibility() {
-    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
-            'cart_checkout_blocks',
-            __FILE__,
-            true // true (compatible) - Pickup from Store gateway supports WooCommerce Blocks
+    function pickup_from_store_gateway_block_support() {
+        require_once __DIR__ . '/includes/class-wc-pickup-from-store-gateway-blocks-support.php';
+        add_action(
+            'woocommerce_blocks_payment_method_type_registration',
+            function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
+                $payment_method_registry->register(new WC_Pickup_From_Store_Gateway_Blocks_Support);
+            }
         );
     }
+
+    add_action('before_woocommerce_init', 'pickup_from_store_cart_checkout_blocks_compatibility');
+    function pickup_from_store_cart_checkout_blocks_compatibility() {
+        if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+                'cart_checkout_blocks',
+                __FILE__,
+                true // true (compatible) - Pickup from Store gateway supports WooCommerce Blocks
+            );
+        }
+    }
 }
+add_action('plugins_loaded', 'pickup_from_store_init');
 
 function pickup_from_store_woocommerce_missing_notice() {
     echo '<div class="error"><p><strong>Pickup from Store Payment Gateway</strong> requires WooCommerce to be installed and active.</p></div>';
