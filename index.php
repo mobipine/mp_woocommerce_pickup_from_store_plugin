@@ -17,8 +17,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Load the gateway class early
-add_action('plugins_loaded', 'init_pickup_from_store_gateway', 0);
+// Load the gateway class
+add_action('plugins_loaded', 'init_pickup_from_store_gateway');
 function init_pickup_from_store_gateway() {
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
@@ -26,25 +26,25 @@ function init_pickup_from_store_gateway() {
         return;
     }
     
-    // Check if WC_Payment_Gateway class exists (WooCommerce is fully loaded)
-    if (!class_exists('WC_Payment_Gateway')) {
-        return;
-    }
-    
-    // Load the gateway class
+    // Load the gateway class file
     $gateway_file = plugin_dir_path(__FILE__) . 'includes/class-wc-pickup-from-store-gateway.php';
     if (file_exists($gateway_file)) {
         require_once $gateway_file;
-        
-        // Register the gateway after class is loaded
-        add_filter('woocommerce_payment_gateways', 'register_pickup_from_store_gateway');
-        
-        // Register blocks support
-        add_action('woocommerce_blocks_loaded', 'pickup_from_store_gateway_block_support');
-        
-        // Declare cart/checkout blocks compatibility
-        add_action('before_woocommerce_init', 'pickup_from_store_cart_checkout_blocks_compatibility');
     }
+    
+    // Register the gateways
+    add_filter('woocommerce_payment_gateways', 'register_pickup_from_store_gateway');
+    
+    // Register blocks support
+    add_action('woocommerce_blocks_loaded', 'pickup_from_store_gateway_block_support');
+    
+    // Declare cart/checkout blocks compatibility
+    add_action('before_woocommerce_init', 'pickup_from_store_cart_checkout_blocks_compatibility');
+}
+
+function register_pickup_from_store_gateway($gateways) {
+    $gateways[] = 'WC_Pickup_From_Store_Gateway';
+    return $gateways;
 }
 
 function pickup_from_store_gateway_block_support() {
@@ -65,14 +65,6 @@ function pickup_from_store_cart_checkout_blocks_compatibility() {
             true // true (compatible) - Pickup from Store gateway supports WooCommerce Blocks
         );
     }
-}
-
-function register_pickup_from_store_gateway($gateways) {
-    // Only add if class exists
-    if (class_exists('WC_Pickup_From_Store_Gateway')) {
-        $gateways[] = 'WC_Pickup_From_Store_Gateway';
-    }
-    return $gateways;
 }
 
 function pickup_from_store_woocommerce_missing_notice() {

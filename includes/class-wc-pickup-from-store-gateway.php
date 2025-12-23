@@ -24,6 +24,7 @@ class WC_Pickup_From_Store_Gateway extends WC_Payment_Gateway
         $this->init_settings();
 
         // Define user set variables
+        $this->enabled = $this->get_option('enabled', 'yes');
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->instructions = $this->get_option('instructions');
