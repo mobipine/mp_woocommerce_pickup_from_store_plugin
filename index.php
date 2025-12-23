@@ -1,11 +1,13 @@
 <?php
 /*
  * Plugin Name: Pickup from Store Payment Gateway
- * Plugin URI: https://github.com/yourusername/pickup-from-store
+ * Plugin URI: https://github.com/mobipine/mp_woocommerce_pickup_from_store_plugin
  * Description: Custom offline payment gateway for WooCommerce that allows customers to pay when picking up from store
- * Author: Your Name
- * Author URI: https://yourwebsite.com
+ * Author: Mobipine Limited
+ * Author URI: https://mobipine.com
  * Version: 1.0.0
+ * GitHub Plugin URI: mobipine/mp_woocommerce_pickup_from_store_plugin
+ * GitHub Branch: main
  * Requires WP: 5.8
  * Requires PHP: 7.4
  */
