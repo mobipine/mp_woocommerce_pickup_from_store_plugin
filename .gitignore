@@ -16,8 +16,8 @@ Thumbs.db
 node_modules/
 vendor/
 
-# Build files
-build/
+# Build files (keep build/ for production, ignore dist/)
+# build/ - Keep this, it's needed for the plugin to work
 dist/
 
 # Temporary files
